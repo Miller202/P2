@@ -30,16 +30,16 @@ int main()
 	int v[n];
 
 	for (i = 0; i < n; i++)
-    {
-        scanf("%d", &v[i]);
-    }
+    	{
+        	scanf("%d", &v[i]);
+    	}
 
-    bubble_sort(v, n);
+    	bubble_sort(v, n);
 
 	for (i = 0; i < n; i++)
-    {
-        printf("%d\n", v[i]);
-    }
+    	{
+        	printf("%d\n", v[i]);
+   	}
 
 	return 0;
 }
