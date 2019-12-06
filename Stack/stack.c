@@ -17,7 +17,7 @@ struct stack
     stack *top;
 };
 
-node *create_node(char item);
+node *create_stack_node(char item);
 stack *create_stack();
 void push(stack *stack, char item);
 int pop(stack *stack);
