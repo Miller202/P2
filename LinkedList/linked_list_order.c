@@ -12,6 +12,7 @@ node* create_linked_list();
 node* add(int item);
 node* ordered_add(node *head, int item);
 node* scanf_list(node *head, int n);
+void print_linked_list(node *head);
 void compare_list(int *quant, node *head1, node *head2);
 
 int main()
@@ -95,6 +96,17 @@ node* scanf_list(node *head, int n)
     }
     return head;
 }
+
+void print_linked_list(node *head) // imprime a lista
+{
+	if (head == NULL) // imprimir enquanto a lista nao acabar
+	{
+		return;
+	}
+	printf("%d\n", head->item);
+	print_linked_list(head->next); // recursao para chamar o proximo head
+}
+
 
 void compare_list(int *quant, node *head1, node *head2)
 {
