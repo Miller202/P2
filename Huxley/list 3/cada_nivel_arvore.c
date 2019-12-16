@@ -1,80 +1,114 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-#define no 2
+typedef struct binary_tree b_tree;
 
-void imprimirValores(int n, int menor[], int maior[])
-{
-    int i;
+struct binary_tree{
+    int item;
+    int height;
+    b_tree* left;
+    b_tree* right;
+};
 
-    for (i = 0; i < n; i++)
-    {
-        if (menor[i] != 404)
-        {
-    	    printf("Nivel %d: Maior = %d, Menor = %d\n", i+1, maior[i], menor[i]);
-        }
-    }
-}
-
-void encontrarValores(int i, int nivel, int n, int array[n], int matriz[n][no], int menor[n], int maior[n])
-{
-	if (i != -1)
-	{
-	    if (array[i] < menor[nivel])
-		{
-			menor[nivel] = array[i];
-		}
-		if (array[i] > maior[nivel])
-		{
-			maior[nivel] = array[i];
-		}
-
-		encontrarValores(matriz[i][0], nivel+1, n, array, matriz, menor, maior);
-		encontrarValores(matriz[i][1], nivel+1, n, array, matriz, menor, maior);
-	}
-}
-
-void preencher(int n, int menor[], int maior[])
-{
-    int i;
-
-    for (i = 0; i < n; i++)
-	{
-		menor[i] = 404;
-		maior[i] = -404;
-	}
-}
-
-void lerEntrada(int n, int array[], int matriz[][no])
-{
-    int i, j;
-
-    for (i = 0; i < n; i++)
-	{
-	    scanf("%d", &array[i]);
-
-		for (j = 0; j < no; j++)
-		{
-			scanf("%d", &matriz[i][j]);
-		}
-	}
-}
+b_tree* create_b_tree();
+b_tree* create_node_b_tree(int item, b_tree *left, b_tree *right);
+int is_empty(b_tree *bt);
+b_tree* construct_b_tree(b_tree *bt, int *value, int *left_child, int *right_child, int k);
+void tree_level(int aux, b_tree *bt);
+void compare_tree_values(b_tree *bt, int *small_child, int *big_child, int *level);
 
 int main()
 {
-	int n;
+    int i, n;
+    scanf("%d", &n);
 
-	scanf("%d", &n);
+    int value[n], left_child[n], right_child[n];
+    for(i = 0; i < n; i++)
+    {
+        scanf("%d %d %d", &value[i], &left_child[i], &right_child[i]);
+    }
 
-	int array[n], matriz[n][no];
-	int menor[n], maior[n];
+    b_tree *bt = create_b_tree();
+    bt = construct_b_tree(bt, value, left_child, right_child, 0);
 
-    lerEntrada(n, array, matriz);
+    int level = 0, small_child[n], big_child[n];
+    for(i = 0; i < n; i++)
+    {
+        small_child[i] = (1 << 20);
+        big_child[i] = -(1 << 20);
+    }
 
-	preencher(n, menor, maior);
+    tree_level(-1, bt);
+    compare_tree_values(bt, small_child, big_child, &level);
 
-    encontrarValores(0, 0, n, array, matriz, menor, maior);
+    if(!is_empty(bt))
+    {
+        level++;
+    }
+    for(i = 0; i < level; i++)
+    {
+        printf("Nivel %d: Maior = %d, Menor = %d\n", i+1, big_child[i], small_child[i]);
+    }
+}
 
-    imprimirValores(n, menor, maior);
+b_tree* create_b_tree()
+{
+    return NULL;
+}
 
-	return 0;
+b_tree* create_node_b_tree(int item, b_tree *left, b_tree *right)
+{
+    b_tree *new_bt = (b_tree*) malloc(sizeof(b_tree));
+	new_bt->item = item;
+	new_bt->height = 0;
+	new_bt->left = left;
+	new_bt->right = right;
+	return new_bt;
+}
+
+int is_empty(b_tree *bt)
+{
+    return (bt == NULL);
+}
+
+b_tree* construct_b_tree(b_tree *bt, int *value, int *left_child, int *right_child, int k)
+{
+    if(k != -1)
+    {
+        int l = construct_b_tree(bt, value, left_child, right_child, left_child[k]);
+        int r = construct_b_tree(bt, value, left_child, right_child, right_child[k]);
+        return create_node_b_tree(value[k], l, r);
+    }
+    return NULL;
+}
+
+void tree_level(int aux, b_tree *bt)
+{
+    if(!is_empty(bt))
+    {
+        bt->height = aux + 1;
+        tree_level(bt->height, bt->left);
+        tree_level(bt->height, bt->right);
+    }
+}
+
+void compare_tree_values(b_tree *bt, int *small_child, int *big_child, int *level)
+{
+    if(!is_empty(bt))
+    {
+        if(small_child[bt->height] > bt->item)
+        {
+            small_child[bt->height] = bt->item;
+        }
+        if(big_child[bt->height] < bt->item)
+        {
+            big_child[bt->height] = bt->item;
+        }
+        if(*level < bt->height)
+        {
+            *level = bt->height;
+        }
+        compare_tree_values(bt->left, small_child, big_child, level);
+        compare_tree_values(bt->right, small_child, big_child, level);
+    }
 }
